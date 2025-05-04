@@ -18,20 +18,13 @@ st.markdown(f"""
 **University:** University of Agriculture, Faisalabad
 """)
 
-# === FILE UPLOAD AND DEFAULT LOAD ===
+# === FILE UPLOAD ===
 st.sidebar.header("Step 1: Upload File")
 uploaded_file = st.sidebar.file_uploader("Upload a CSV or Excel file", type=["csv", "xlsx"])
 
 data = None
 
-if not uploaded_file:
-    if st.sidebar.button("📂 Load 'data.csv' from directory"):
-        try:
-            data = pd.read_csv("data.csv")
-            st.success("Loaded 'data.csv' from the current directory.")
-        except FileNotFoundError:
-            st.sidebar.error("⚠️ 'data.csv' not found in the directory.")
-else:
+if uploaded_file:
     if uploaded_file.name.endswith('.csv'):
         data = pd.read_csv(uploaded_file)
     else:
@@ -42,11 +35,10 @@ if data is not None:
     st.subheader("📄 Dataset Preview")
     st.dataframe(data.head())
 else:
-    st.warning("⚠️ No dataset loaded. Please upload a file or click the button to load 'data.csv'.")
+    st.warning("⚠️ No dataset loaded. Please upload a file.")
 
 # === CONTINUE ONLY IF DATA EXISTS ===
 if data is not None:
-
     # === PLOT SELECTION ===
     st.sidebar.header("Step 2: Select Graph Type")
     plot_type = st.sidebar.selectbox("Choose a plot type", [
@@ -147,8 +139,7 @@ if data is not None:
                 st.error(f"❌ Error fitting OLS model: {e}")
         else:
             st.warning("⚠️ Please select two **different** columns and uncheck 'Use just one column for plot'.")
-
-
+    
     elif plot_type == "Correlation Between Two Columns":
         if not use_single_col and x_col and y_col and x_col != y_col:
             try:
@@ -162,3 +153,4 @@ if data is not None:
     # === STATISTICS ===
     st.subheader("📈 Statistical Summary")
     st.write(data.describe())
+# === END STATISTICS ===
